@@ -1,0 +1,23 @@
+
+version: '3'
+
+tasks:
+  gen-ent:
+    desc: "generate ent files"
+    cmds:
+      - ent generate  ./examples/ent/schema 
+  build:
+    desc: "build binaries"
+    cmds:
+      - mkdir -p ./bin
+      - go build -o ./bin/ ./cmd/enterd/...
+  example:
+    desc: "generate erd using example"
+    cmds:
+      - ./bin/enterd ./examples/ent/schema
+    deps:
+      - build
+  default:
+    cmds:
+      - task gen-ent
+    silent: true
