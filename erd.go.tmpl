@@ -14,7 +14,7 @@ erDiagram
         {{ $node.ID.Type }} id PK{{- if $node.ID.Comment }} "{{ $node.ID.Comment -}}"{{- end }}
         {{- end }}
         {{- range $f := $node.Fields }}
-        {{ ERDType $f.Type.String }} {{ $f.StorageKey }}{{- if $f.IsEdgeField }} FK{{- end }}{{ if not $f.Sensitive }}{{ end }} {{- template "model/fieldcomment" $f }}
+        {{ ERDType $f.Column }} {{ $f.StorageKey }}{{- if $f.IsEdgeField }} FK {{ end }}{{ if not $f.Sensitive }}{{ end }} {{- template "model/fieldcomment" $f }}
         {{- end }}
     }
 ```
