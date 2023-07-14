@@ -8,6 +8,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"entgo.io/ent/dialect"
@@ -23,13 +24,14 @@ var (
 	erdtmpl = template.Must(
 		template.New("erd").
 			Funcs(template.FuncMap{
-				"ERDType": ERDType,
+				"ERDType":      ERDType,
+				"TableComment": TableComment,
 			}).Parse(tmplerd),
 	)
 )
 
 func generateERD(g *gen.Graph) ([]byte, error) {
-	// g.Nodes[0].Fields[0].Type.Type.ConstName()
+	g.Nodes[0].Table()
 	var b bytes.Buffer
 	if err := erdtmpl.Execute(&b, g); err != nil {
 		return nil, err
@@ -92,19 +94,19 @@ func ERDType(c *schema.Column) (t string) {
 	case field.TypeInt8:
 		t = "tinyint"
 	case field.TypeUint8:
-		t = "tinyint unsigned"
+		t = "utinyint"
 	case field.TypeInt16:
 		t = "smallint"
 	case field.TypeUint16:
-		t = "smallint unsigned"
+		t = "usmallint"
 	case field.TypeInt32:
 		t = "int"
 	case field.TypeUint32:
-		t = "int unsigned"
+		t = "uint"
 	case field.TypeInt, field.TypeInt64:
 		t = "bigint"
 	case field.TypeUint, field.TypeUint64:
-		t = "bigint unsigned"
+		t = "ubigint"
 	case field.TypeBytes:
 		size := int64(math.MaxUint16)
 		if c.Size > 0 {
@@ -146,11 +148,28 @@ func ERDType(c *schema.Column) (t string) {
 		}
 		t = fmt.Sprintf("enum(%s)", strings.Join(values, ", "))
 	case field.TypeUUID:
-		t = "char(36) binary"
+		t = "char(36)"
 	case field.TypeOther:
 		t = c.Name
 	default:
 		panic(fmt.Sprintf("unsupported type %q for column %q", c.Type.String(), c.Name))
 	}
 	return t
+}
+
+func TableComment(c *gen.Type) string {
+	if c.EntSQL() == nil {
+		return ""
+	}
+	optString := c.EntSQL().Options
+	if optString == "" {
+		return ""
+	}
+	re := regexp.MustCompile(`COMMENT='([^']+)'`)
+	match := re.FindStringSubmatch(optString)
+	if len(match) > 1 {
+		comment := match[1]
+		return comment
+	}
+	return ""
 }
