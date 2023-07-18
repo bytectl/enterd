@@ -5,8 +5,13 @@
  		"{{ $.Comment -}}"
 	{{- end -}}
 {{- end -}}
-erDiagram
+# Schema ERD
 {{range  $node := $.Nodes }}
+```mermaid
+---
+title: {{if $comment := TableComment $node }} {{$comment}} {{else}} {{ $node.Table }} {{end}}
+---
+erDiagram
     {{ $node.Table }}  {
         {{- if $node.HasOneFieldID }}
         {{ $node.ID.Type }} id PK{{- if $node.ID.Comment }} "{{ $node.ID.Comment -}}"{{- end }}
@@ -15,11 +20,9 @@ erDiagram
         {{ ERDType $f.Column }} {{ $f.StorageKey }}{{- if $f.IsEdgeField }} FK {{ end }}{{ if not $f.Sensitive }}{{ end }} {{ template "model/fieldcomment" $f }}
         {{- end }}
     }
-{{- end -}}
-{{range  $node := $.Nodes }}
-    {{- range $edge :=$node.Edges }}
-    {{ $node.Table }} {{Relation $edge.Rel }} {{ $edge.Type.Table }} : {{ $edge.Name }} 
-    {{end -}}
+```
 {{ end -}}
+
+
 
 

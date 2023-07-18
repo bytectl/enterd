@@ -11,6 +11,10 @@ tasks:
     cmds:
       - mkdir -p ./bin
       - go build -o ./bin/ ./cmd/enterd/...
+  install:
+    desc: "install binaries"
+    cmds:
+      - go install ./cmd/enterd/...      
   example:
     desc: "generate erd using example"
     cmds:
@@ -18,6 +22,6 @@ tasks:
     deps:
       - build
   default:
-    cmds:
-      - task gen-ent
+    deps:
+      - build
     silent: true

@@ -26,6 +26,7 @@ var (
 			Funcs(template.FuncMap{
 				"ERDType":      ERDType,
 				"TableComment": TableComment,
+				"Relation":     Relation,
 			}).Parse(tmplerd),
 	)
 )
@@ -172,4 +173,18 @@ func TableComment(c *gen.Type) string {
 		return comment
 	}
 	return ""
+}
+
+func Relation(r *gen.Relation) string {
+	switch r.Type {
+	case gen.O2O:
+		return "|o--o|"
+	case gen.O2M:
+		return "|o--o{"
+	case gen.M2O:
+		return "}o--|o"
+	case gen.M2M:
+		return "}o--o{"
+	}
+	return "|o--o|"
 }

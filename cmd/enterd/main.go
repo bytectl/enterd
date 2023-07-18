@@ -17,7 +17,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if err := os.WriteFile("schema-erd.md", b, 0644); err != nil {
+	if err := os.WriteFile("schema-erd.mmd", b, 0644); err != nil {
 		log.Fatal(err)
 	}
 }
